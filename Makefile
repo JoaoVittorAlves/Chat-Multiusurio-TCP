@@ -1,10 +1,14 @@
 CC = gcc
-CFLAGS = -Wall -pthread
+CFLAGS = -Wall -Wextra -pthread
 
-all: main
+# Executáveis
+all: server client
 
-main: main.c log.c log.h
-	$(CC) $(CFLAGS) main.c log.c -o main
+server: server.c log.c log.h
+	$(CC) $(CFLAGS) -o server server.c log.c
+
+client: client.c log.c log.h
+	$(CC) $(CFLAGS) -o client client.c log.c
 
 clean:
-	rm -f main
+	rm -f server client
