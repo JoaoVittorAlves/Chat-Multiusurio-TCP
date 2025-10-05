@@ -1,0 +1,70 @@
+Relatório Final do Projeto
+
+1. Mapeamento requisitos → código
+
+| Requisito obrigatório                     | Local no código / Implementação                                         |
+|-------------------------------------------|-------------------------------------------------------------------------|
+| Threads                                   | `pthread_create` em `run_chat_server()` para cada cliente               |
+| Exclusão mútua                            | `pthread_mutex_lock` / `pthread_mutex_unlock` no `clients_list`         |
+| Semáforos                                 | `sem_t sem_clients` controla número máximo de clientes simultâneos      |
+| Monitores                                 | `ThreadSafeClientsList` encapsula lista de clientes com mutex           |
+| Sockets                                   | `socket()`, `bind()`, `listen()`, `accept()`, `send()`, `recv()`        |
+| Gerenciamento de recursos                 | `close(socket)` e `free()` para liberar memória e descriptors           |
+| Tratamento de erros                       | `perror`, verificações de retorno de socket, `malloc`                   |
+| Logging concorrente                       | `logger_log(&logger, ...)` usando `libtslog`                            |
+
+
+
+## 2. Relatório de análise com IA
+
+Utilizei o ChatGPT para realizar ajustes no código, corrigir erros na saída e auxiliar na criação da biblioteca libtslog. 
+Sempre que surgiam dúvidas sobre trechos específicos de código necessários para o projeto, recorri à LLM como consulta, 
+além de utilizar o material do Drive de LP2 como consulta. A IA sugeria melhorias no projeto, explicando o motivo de cada recomendação. 
+Após análise, decidia se a sugestão era útil e, se fosse o caso, adicionava ao código. 
+A seguir, apresento alguns prompts e respostas da interação com a LLM:
+
+Prompt 1
+> "Veja se este código de servidor TCP multiusuário está correto e cumpre os requisitos de threads, semáforos e mutex."
+
+Resposta da LLM: 
+- O código está funcional.  
+- Sugeriu encapsular a lista de clientes em `ThreadSafeClientsList` para atuar como monitor.  
+- Confirmou que `sem_t sem_clients` controla o número máximo de clientes simultâneos.  
+- Indicou ajustes no logging e tratamento de erros.
+
+
+Prompt 2
+> "O `test_clients.sh` conecta vários clientes, mas todos são desconectados rapidamente. O que está faltando no código?"
+
+Resposta da LLM: 
+- O problema estava no uso do `read` sem verificar o retorno (`valread`).  
+- Sugeriu adicionar `buffer[valread] = '\0'` e tratar o caso `valread <= 0` para fechar corretamente o socket.  
+- Resultado: os clientes permanecem conectados e recebem mensagens de broadcast corretamente.
+
+
+Prompt 3
+> "Quero mapear requisitos obrigatórios para o código do servidor desse meu projeto."
+
+Resposta da LLM: 
+- Criou uma tabela de rastreabilidade de requisitos + funções e trechos do código.  
+- Destacou threads, mutex, semáforos, monitores, sockets, gerenciamento de recursos, tratamento de erros e logging.
+
+
+Prompt 4
+> "Preciso de um diagrama de sequência cliente-servidor para o relatório."
+
+Resposta da LLM: 
+- Forneceu um diagrama Mermaid mostrando a sequência completa:  
+  - Conexão do cliente  
+  - Aceitação pelo servidor  
+  - Envio de mensagens  
+  - Broadcast / resposta HTTP / confirmação de Job  
+  - Desconexão com 'SAIR'
+
+
+Observações finais
+
+Todos os requisitos obrigatórios foram implementados e testados, incluindo o chat multiusuário, o servidor HTTP simples e o 
+agendador. Durante os testes com múltiplos clientes, foram verificados o logging concorrente e o tratamento de erros. O uso da LLM 
+agregou valor ao projeto ao acelerar a identificação e correção de bugs, fornecer sugestões de melhorias no código, auxiliar na 
+elaboração do relatório final e facilitar o mapeamento de requisitos.

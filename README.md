@@ -106,3 +106,4 @@ O mesmo binário de servidor e cliente suporta diferentes modos, selecionados po
 - O logger thread-safe está integrado em todos os modos.
 - O script `test_clients.sh` só testa o modo chat.
 - Para cada modo, use a porta padrão do exemplo ou ajuste conforme necessário no código.
+- O cliente não possui modo web, pois o teste HTTP é feito via navegador ou curl.

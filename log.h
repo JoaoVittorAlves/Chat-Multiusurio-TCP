@@ -11,5 +11,7 @@ typedef struct {
 
 void logger_init(Logger* logger);
 void logger_log(Logger* logger, const char* fmt, ...);
+void logger_close(Logger *logger);
+
 
 #endif

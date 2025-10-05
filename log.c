@@ -15,3 +15,7 @@ void logger_log(Logger* logger, const char* fmt, ...) {
 
     pthread_mutex_unlock(&logger->mutex);
 }
+
+void logger_close(Logger *logger) {
+    pthread_mutex_destroy(&logger->mutex);
+}
